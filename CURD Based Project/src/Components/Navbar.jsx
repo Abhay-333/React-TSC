@@ -1,6 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ProductContext } from "../Utils/Context";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
+  const [Products] = useContext(ProductContext);
+
+  let individualCategory =
+    Products && Products.reduce((acc, cv) => [...acc, cv.category], []);
+  individualCategory = [...new Set(individualCategory)];
+
+  const colors = () => {
+    return `rgba(${(Math.random() * 255).toFixed()}, 
+    ${(Math.random() * 255).toFixed()},
+    ${(Math.random() * 255).toFixed()},0.4)`;
+  };
+
   return (
     <nav className="sideNavbar bg-zinc-700 w-[18%] h-full flex items-start flex-col">
       <div className="addToCart border-[1px] border-[white] py-3 px-4 rounded-lg mx-9 my-10">
@@ -12,20 +26,19 @@ const Navbar = () => {
       <div className="categories flex flex-col items-start px-6">
         <h1 className="text-2xl">Category</h1>
 
-        <h1 className="mt-3 flex items-center">
-          <span className="w-[15px] h-[15px] mr-1 rounded-full bg-blue-300"></span>
-          Category 1
-        </h1>
-
-        <h1 className="mt-3 flex items-center">
-          <span className="w-[15px] h-[15px] mr-1 rounded-full bg-blue-300"></span>
-          Category 2
-        </h1>
-
-        <h1 className="mt-3 flex items-center">
-          <span className="w-[15px] h-[15px] mr-1 rounded-full bg-blue-300"></span>
-          Category 3
-        </h1>
+        {individualCategory.map((categories, index) => (
+          <Link
+            key={index}
+            to={`/?category=${categories}`}
+            className="mt-3 flex items-center capitalize"
+          >
+            <span
+              style={{ background: colors() }}
+              className={`w-[15px] h-[15px] mr-1 rounded-full`}
+            ></span>
+            {categories}
+          </Link>
+        ))}
       </div>
     </nav>
   );

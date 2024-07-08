@@ -1,26 +1,57 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Navbar from "./Navbar";
-import { Link } from "react-router-dom";
-import Context from "../Utils/Context";
+import { Link, useLocation } from "react-router-dom";
+import { ProductContext } from "../Utils/Context";
+import Loading from "./Loading";
 
 const Home = () => {
-  return (
+  const [Products] = useContext(ProductContext);
+  const { search } = useLocation();
+  const [individualCategoryProducts, setIndividualCategoryProducts] =
+    useState(null);
+  const categoryName = decodeURIComponent(search.split("=")[1]);
+
+  const getProductCategory = async () => {
+    try {
+      const response = await fetch(
+        `https://fakestoreapi.com/products/category/${categoryName}`
+      );
+      const data = await response.json() 
+      setIndividualCategoryProducts(data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if(!individualCategoryProducts || categoryName == 'undefined') setIndividualCategoryProducts(Products)
+    if(categoryName != "undefined") getProductCategory() 
+  }, [categoryName, Products]);
+
+  return Products ? (
     <>
       <Navbar />
 
       <div className="main-container w-[82%] min-h-[100vh] flex flex-wrap gap-5 items-center justify-center  overflow-y-auto">
-        <Link to="/details/1" className="card shadow w-[20%] h-[45vh] border-[1px] border-[gray] flex flex-col items-center justify-center bg-[white] text-black hover:scale-110 transition-all rounded-lg">
-          {/* <div
-            className="img-div h-[80%] w-full bg-contain bg-no-repeat bg-center"
-            style={{
-              backgroundImage: `url(https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg)`,
-            }}
-          ></div> */}
-          <Context></Context>
-          <h1>Lorem ipsum dolor sit amet.</h1>
-        </Link>
+        {individualCategoryProducts && individualCategoryProducts.map((products, index) => (
+          <Link
+            key={index}
+            to={`/details/${products.id}`}
+            className="card shadow w-[25%] h-[50vh] border-[1px] border-[gray] flex flex-col items-center justify-center bg-[white] text-black hover:scale-105 transition-all rounded-lg"
+          >
+            <div
+              className="img-div h-[65%] w-full bg-contain bg-no-repeat bg-center"
+              style={{
+                backgroundImage: `url(${products.image})`,
+              }}
+            ></div>
+            <h1 className="text-center mx-1 mt-5">{products.title}</h1>
+          </Link>
+        ))}
       </div>
     </>
+  ) : (
+    <Loading />
   );
 };
 

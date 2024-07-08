@@ -1,27 +1,46 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ProductContext } from "../Utils/Context";
+import Loading from "./Loading";
+import { useParams } from "react-router-dom";
 
 const Details = () => {
-  return (
-    <div className="w-[70%] h-full  mx-auto flex items-center justify-around">
-      <div className="img-div h-[80vh] border-[1px] border-[gray] bg-white  rounded-lg p-2">
+  const [Products] = useContext(ProductContext);
+  const {id} = useParams()
+  const [singleProduct, setSingleProduct] = useState(null)
+  const getSingleProduct = async ()=>{
+    const response = await new Promise((resolve, reject)=>{
+      fetch(`https://fakestoreapi.com/products/${id}`)
+      .then((res)=>resolve(res))
+      .catch((err)=>reject(err))
+    })
+    const data = await response.json()
+    setSingleProduct(data)
+  } 
+
+  useEffect(()=>{
+    getSingleProduct()
+  },[])
+
+  return singleProduct ? (
+    <div className="w-[80%] h-full  mx-auto flex items-center justify-around">
+      <div className="img-div h-[60vh] border-[1px] border-[gray] bg-white rounded-lg p-7">
         <img
           className="h-full w-full object-cover"
-          src="https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+          src={`${singleProduct.image}`}
           alt=""
         />
       </div>
-      <div className="details h-[50%] w-[45%] pt-5 pl-5 flex flex-col gap-[1vw]">
+      <div className="details h-[50%] w-[60%] pt-5 pl-5 flex flex-col gap-[1vw]">
         <h1 className="text-4xl font-bold">
-          Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops
+          {singleProduct.title}
         </h1>
-        <h1 className="font-semibold text-2xl">$109.95</h1>
+        <h1 className="font-semibold text-2xl">${singleProduct.price}</h1>
 
-        <h1 className="font-medium text-1xl">men's clothing</h1>
+        <h1 className="font-medium capitalize text-1xl">{singleProduct.category}</h1>
 
         <h1>
-          Your perfect pack for everyday use and walks in the forest. Stash your
-          laptop (up to 15 inches) in the padded sleeve, your everyday
+          {singleProduct.description}
         </h1>
 
         <div className="btns flex items-center gap-4">
@@ -39,6 +58,8 @@ const Details = () => {
         </div>
       </div>
     </div>
+  ) : (
+    <Loading />
   );
 };
 
