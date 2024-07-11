@@ -17,7 +17,7 @@ const Navbar = () => {
 
   return (
     <nav className="sideNavbar bg-zinc-700 w-[18%] h-full flex items-start flex-col">
-      <div className="addToCart border-[1px] border-[white] py-3 px-4 rounded-lg mx-9 my-10">
+      <div className="addToCart bg-black font-bold py-5 px-4 rounded-lg mx-9 my-10">
         <a href="/create" className="">
           <button>Add New Product</button>
         </a>

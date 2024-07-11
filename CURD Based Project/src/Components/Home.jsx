@@ -25,7 +25,10 @@ const Home = () => {
 
   useEffect(() => {
     if(!individualCategoryProducts || categoryName == 'undefined') setIndividualCategoryProducts(Products)
-    if(categoryName != "undefined") getProductCategory() 
+    if(categoryName != "undefined") {
+      // getProductCategory() 
+      setIndividualCategoryProducts(Products.filter((p)=>p.category == categoryName))
+    }
   }, [categoryName, Products]);
 
   return Products ? (
